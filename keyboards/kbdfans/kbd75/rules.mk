@@ -1,1 +1,2 @@
 DEFAULT_FOLDER = kbdfans/kbd75/rev1
+TAP_DANCE_ENABLE = yes
