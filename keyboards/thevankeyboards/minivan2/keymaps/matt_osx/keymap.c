@@ -50,7 +50,6 @@ void lyr3_key_press(qk_tap_dance_state_t *state, void *user_data);
 
 //BSPC_DEL Key Function Prototypes
 void bspc_key_press(qk_tap_dance_state_t *state, void *user_data);
-void bspc_key_finished (qk_tap_dance_state_t *state, void *user_data);
 void bspc_key_reset (qk_tap_dance_state_t *state, void *user_data);
 
 enum custom_keycodes {
@@ -206,34 +205,9 @@ static tap bspc_tap_state =
 
 static uint8_t del_bspc_lastcode = KC_NO;
 
-void bspc_key_finished (qk_tap_dance_state_t *state, void *user_data)
-{
-    bspc_tap_state.state = cur_dance(state);
-    switch (bspc_tap_state.state)
-    {
-        case SINGLE_HOLD:
-            if (keyboard_report->mods & MOD_BIT (KC_RSFT))
-            {
-                register_code(KC_DEL);
-                del_bspc_lastcode = KC_DEL;
-            }
-            else
-            {
-                register_code(KC_BSPC);
-                del_bspc_lastcode = KC_BSPC;
-            }
-            break;
-    }
-}
-
 void bspc_key_reset (qk_tap_dance_state_t *state, void *user_data)
 {
-    switch (bspc_tap_state.state)
-    {
-        case SINGLE_HOLD:
-            unregister_code(del_bspc_lastcode);
-            break;
-    }
+    unregister_code(del_bspc_lastcode);
     bspc_tap_state.state = 0;
     del_bspc_lastcode = KC_NO;
 }
@@ -241,9 +215,11 @@ void bspc_key_reset (qk_tap_dance_state_t *state, void *user_data)
 void bspc_key_press(qk_tap_dance_state_t *state, void *user_data)
 {
     if (keyboard_report->mods & MOD_BIT (KC_RSFT))
-        tap_code(KC_DEL);
+        del_bspc_lastcode = KC_DEL;
     else
-        tap_code(KC_BSPC);
+        del_bspc_lastcode = KC_BSPC;
+
+    register_code(del_bspc_lastcode);
 }
 
 /* END BSPC_KEY_TAP */
@@ -298,7 +274,7 @@ uint32_t layer_state_set_user(uint32_t state) {
 //Associate our tap dance key with its functionality
 qk_tap_dance_action_t tap_dance_actions[] = 
 {
-    [LYR1_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, lyr1_key_finished, lyr1_key_reset),
+    [LYR1_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, lyr1_key_finished, lyr1_key_reset, 120),
     [LYR3_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr3_key_press, lyr3_key_finished, lyr3_key_reset),
-    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, bspc_key_finished, bspc_key_reset, 120)
+    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 120)
 };
