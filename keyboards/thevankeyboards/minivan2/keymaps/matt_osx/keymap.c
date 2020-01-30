@@ -39,7 +39,8 @@ enum
 //Helper PROTOTYPES
 int cur_dance (qk_tap_dance_state_t *state);
 
-//LYR2 Key Function Prototypes
+//LYR1 Key Function Prototypes
+void lyr1_key_press(qk_tap_dance_state_t *state, void *user_data);
 void lyr1_key_finished (qk_tap_dance_state_t *state, void *user_data);
 void lyr1_key_reset (qk_tap_dance_state_t *state, void *user_data);
 
@@ -77,10 +78,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [0] = LAYOUT(KC_ESC, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, TD(BSPC_KEY_TAP), KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT, TD(LYR1_KEY_TAP), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, KC_LCTL, KC_LALT, KC_LGUI, MO(2), KC_SPC, KC_SPC, TD(LYR3_KEY_TAP), KC_DOWN, KC_UP, KC_RIGHT),
-  [1] = LAYOUT(KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MINS, KC_LBRC, KC_RBRC, KC_TRNS, KC_BSLS, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_EQL, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT),
-  [2] = LAYOUT(KC_TRNS, KC_SLCK, KC_PAUS, KC_F16, KC_F17, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_F18, KC_POWER, KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MPRV, KC_MNXT, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_LANG1, KC_LANG2, KC_HOME, KC_PGDN, KC_PGUP, KC_END),
-  [3] = LAYOUT(RESET, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_NO, BL_STEP, BL_DEC, BL_INC, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO)
+  [0] = LAYOUT(KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, TD(BSPC_KEY_TAP),
+               TD(LYR1_KEY_TAP), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT,
+               KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
+               KC_LCTL, KC_LALT, KC_LGUI, MO(2), KC_SPC, KC_SPC, TD(LYR3_KEY_TAP), KC_DOWN, KC_UP, KC_RIGHT),
+
+  [1] = LAYOUT(KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_TRNS,
+               KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MINS, KC_LBRC, KC_RBRC, KC_TRNS, KC_BSLS,
+               KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_EQL, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+               KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
+
+  [2] = LAYOUT(KC_ESC, KC_SLCK, KC_PAUS, KC_F16, KC_F17, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_F18, KC_POWER,
+               KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS,
+               KC_TRNS, KC_MPRV, KC_MNXT, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS,
+               KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LANG1, KC_LANG2, KC_HOME, KC_PGDN, KC_PGUP, KC_END),
+
+  [3] = LAYOUT(RESET, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_NO,
+              BL_STEP, BL_DEC, BL_INC, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+              KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+              KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO)
 };
 
 
@@ -120,32 +136,25 @@ static tap lyr1_tap_state =
 };
 
 
-void lyr1_key_finished (qk_tap_dance_state_t *state, void *user_data)
+void lyr1_key_press(qk_tap_dance_state_t *state, void *user_data)
+{
+    layer_on(LAYER_1);
+}
+
+void lyr1_key_finished(qk_tap_dance_state_t *state, void *user_data)
 {
     lyr1_tap_state.state = cur_dance(state);
     switch (lyr1_tap_state.state)
     {
-        case SINGLE_HOLD: 
-            layer_on(LAYER_1);
-            break;
-    
         case DOUBLE_TAP: 
             tap_code(KC_CAPS);
             break;
     }
 }
 
-void lyr1_key_reset (qk_tap_dance_state_t *state, void *user_data)
+void lyr1_key_reset(qk_tap_dance_state_t *state, void *user_data)
 {
-    switch (lyr1_tap_state.state)
-    {
-        case SINGLE_HOLD:
-            if (layer_state_is(LAYER_1))
-            {
-                layer_off(LAYER_1);
-            }
-            break;
-    }
+    layer_off(LAYER_1);
     lyr1_tap_state.state = 0;
 }
 /* END LYR1_KEY_TAP */
@@ -160,7 +169,7 @@ static tap lyr3_tap_state =
 };
 
 
-void lyr3_key_finished (qk_tap_dance_state_t *state, void *user_data)
+void lyr3_key_finished(qk_tap_dance_state_t *state, void *user_data)
 {
     lyr3_tap_state.state = cur_dance(state);
     switch (lyr3_tap_state.state)
@@ -178,7 +187,7 @@ void lyr3_key_finished (qk_tap_dance_state_t *state, void *user_data)
     }
 }
 
-void lyr3_key_reset (qk_tap_dance_state_t *state, void *user_data)
+void lyr3_key_reset(qk_tap_dance_state_t *state, void *user_data)
 {
     switch (lyr3_tap_state.state)
     {
@@ -197,19 +206,12 @@ void lyr3_key_press(qk_tap_dance_state_t *state, void *user_data)
 
 
 /* BEGIN BPSC_KEY_TAP */
-static tap bspc_tap_state =
-{
-    .is_press_action = true,
-    .state = 0
-};
 
 static uint8_t del_bspc_lastcode = KC_NO;
 
-void bspc_key_reset (qk_tap_dance_state_t *state, void *user_data)
+void bspc_key_reset(qk_tap_dance_state_t *state, void *user_data)
 {
     unregister_code(del_bspc_lastcode);
-    bspc_tap_state.state = 0;
-    del_bspc_lastcode = KC_NO;
 }
 
 void bspc_key_press(qk_tap_dance_state_t *state, void *user_data)
@@ -274,7 +276,7 @@ uint32_t layer_state_set_user(uint32_t state) {
 //Associate our tap dance key with its functionality
 qk_tap_dance_action_t tap_dance_actions[] = 
 {
-    [LYR1_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, lyr1_key_finished, lyr1_key_reset, 120),
+    [LYR1_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr1_key_press, lyr1_key_finished, lyr1_key_reset),
     [LYR3_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr3_key_press, lyr3_key_finished, lyr3_key_reset),
-    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 120)
+    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 0)
 };
