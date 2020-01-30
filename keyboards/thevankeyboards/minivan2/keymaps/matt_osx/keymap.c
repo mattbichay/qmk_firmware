@@ -216,7 +216,7 @@ void bspc_key_reset(qk_tap_dance_state_t *state, void *user_data)
 
 void bspc_key_press(qk_tap_dance_state_t *state, void *user_data)
 {
-    if (keyboard_report->mods & MOD_BIT (KC_RSFT))
+    if (keyboard_report->mods & MOD_BIT (KC_RSFT) || keyboard_report->mods & MOD_BIT(KC_LSFT))
         del_bspc_lastcode = KC_DEL;
     else
         del_bspc_lastcode = KC_BSPC;
@@ -278,5 +278,5 @@ qk_tap_dance_action_t tap_dance_actions[] =
 {
     [LYR1_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr1_key_press, lyr1_key_finished, lyr1_key_reset),
     [LYR3_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr3_key_press, lyr3_key_finished, lyr3_key_reset),
-    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 0)
+    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 50)
 };
