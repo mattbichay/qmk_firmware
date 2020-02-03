@@ -24,7 +24,8 @@ enum
 {
     LYR1_KEY_TAP = 0,
     LYR3_KEY_TAP = 1,
-    BSPC_KEY_TAP = 2
+    BSPC_KEY_TAP = 2,
+    MCRO_KEY_TAP = 3
 };
 
 enum
@@ -41,17 +42,22 @@ int cur_dance (qk_tap_dance_state_t *state);
 
 //LYR1 Key Function Prototypes
 void lyr1_key_press(qk_tap_dance_state_t *state, void *user_data);
-void lyr1_key_finished (qk_tap_dance_state_t *state, void *user_data);
+void lyr1_key_finished(qk_tap_dance_state_t *state, void *user_data);
 void lyr1_key_reset (qk_tap_dance_state_t *state, void *user_data);
 
 //LYR3 Key Function Prototypes
 void lyr3_key_finished (qk_tap_dance_state_t *state, void *user_data);
-void lyr3_key_reset (qk_tap_dance_state_t *state, void *user_data);
+void lyr3_key_reset(qk_tap_dance_state_t *state, void *user_data);
 void lyr3_key_press(qk_tap_dance_state_t *state, void *user_data);
 
 //BSPC_DEL Key Function Prototypes
 void bspc_key_press(qk_tap_dance_state_t *state, void *user_data);
-void bspc_key_reset (qk_tap_dance_state_t *state, void *user_data);
+void bspc_key_reset(qk_tap_dance_state_t *state, void *user_data);
+
+//MCRO Key Function Prototypes
+void mcro_key_finished(qk_tap_dance_state_t *state, void *user_data);
+void mcro_key_reset(qk_tap_dance_state_t *state, void *user_data);
+
 
 enum custom_keycodes {
   M_IME = SAFE_RANGE
@@ -89,7 +95,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
 
   [2] = LAYOUT(KC_ESC, KC_SLCK, KC_PAUS, KC_F16, KC_F17, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_F18, KC_POWER,
-               KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS,
+               KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, TD(MCRO_KEY_TAP),
                KC_TRNS, KC_MPRV, KC_MNXT, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS,
                KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LANG1, KC_LANG2, KC_HOME, KC_PGDN, KC_PGUP, KC_END),
 
@@ -226,6 +232,48 @@ void bspc_key_press(qk_tap_dance_state_t *state, void *user_data)
 
 /* END BSPC_KEY_TAP */
 
+/* BEGIN MCRO KEY TAP */
+
+
+static tap mcro_tap_state =
+{
+    .is_press_action = true,
+    .state = 0
+};
+
+static bool recording = false;
+void mcro_key_finished(qk_tap_dance_state_t *state, void *user_data)
+{
+    mcro_tap_state.state = cur_dance(state);
+    keyrecord_t kr;
+    kr.event.pressed = false;
+
+    if (recording)
+    {
+        kr.event.pressed = true;
+        process_dynamic_macro(DYN_REC_STOP, &kr);
+        recording = false;
+    }
+    else if (mcro_tap_state.state == SINGLE_TAP)
+    {
+        kr.event.pressed = false;
+        process_dynamic_macro(DYN_MACRO_PLAY1, &kr);
+    }
+    else if (mcro_tap_state.state == DOUBLE_TAP)
+    {
+        kr.event.pressed = false;
+        recording = true;
+        process_dynamic_macro(DYN_REC_START1, &kr);
+    }
+}
+
+void mcro_key_reset (qk_tap_dance_state_t *state, void *user_data)
+{
+    mcro_tap_state.state = 0;
+}
+/* END MCRO KEY TAP */
+
+
 void process_indicator_update(uint32_t state, uint8_t usb_led) {
   for (int i = 0; i < 3; i++) {
     setrgb(0, 0, 0, (LED_TYPE *)&led[i]);
@@ -278,5 +326,6 @@ qk_tap_dance_action_t tap_dance_actions[] =
 {
     [LYR1_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr1_key_press, lyr1_key_finished, lyr1_key_reset),
     [LYR3_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr3_key_press, lyr3_key_finished, lyr3_key_reset),
-    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 50)
+    [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 50),
+    [MCRO_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mcro_key_finished, mcro_key_reset),
 };
