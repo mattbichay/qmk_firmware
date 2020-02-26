@@ -1,6 +1,8 @@
 #include "minivan.h"
 
 #define OSX_LOCK LCTL(LGUI(KC_Q))
+#define JMP_LEFT LALT(KC_LEFT)
+#define JMP_RIGHT LALT(KC_RIGHT)
 
 // TAP STATE Definition
 typedef struct
@@ -25,9 +27,9 @@ enum {
 enum
 {
     LYR1_KEY_TAP = 0,
-    LYR3_KEY_TAP = 1,
-    BSPC_KEY_TAP = 2,
-    MCRO_KEY_TAP = 3
+    BSPC_KEY_TAP = 1,
+    MCRO_KEY_TAP = 2,
+    LANG_KEY_TAP = 3
 };
 
 enum
@@ -47,10 +49,6 @@ void lyr1_key_press(qk_tap_dance_state_t *state, void *user_data);
 void lyr1_key_finished(qk_tap_dance_state_t *state, void *user_data);
 void lyr1_key_reset (qk_tap_dance_state_t *state, void *user_data);
 
-//LYR3 Key Function Prototypes
-void lyr3_key_finished (qk_tap_dance_state_t *state, void *user_data);
-void lyr3_key_reset(qk_tap_dance_state_t *state, void *user_data);
-void lyr3_key_press(qk_tap_dance_state_t *state, void *user_data);
 
 //BSPC_DEL Key Function Prototypes
 void bspc_key_press(qk_tap_dance_state_t *state, void *user_data);
@@ -59,6 +57,9 @@ void bspc_key_reset(qk_tap_dance_state_t *state, void *user_data);
 //MCRO Key Function Prototypes
 void mcro_key_finished(qk_tap_dance_state_t *state, void *user_data);
 void mcro_key_reset(qk_tap_dance_state_t *state, void *user_data);
+
+// Key Function Prototypes
+void lang_key_toggle(qk_tap_dance_state_t *state, void *user_data);
 
 
 enum custom_keycodes {
@@ -86,25 +87,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+
   [0] = LAYOUT(KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, TD(BSPC_KEY_TAP),
                TD(LYR1_KEY_TAP), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT,
                KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
-               KC_LCTL, KC_LALT, KC_LGUI, MO(2), KC_SPC, KC_SPC, TD(LYR3_KEY_TAP), KC_DOWN, KC_UP, KC_RIGHT),
-
+               KC_LCTL, KC_LALT, KC_LGUI, KC_NO, LT(LAYER_2, KC_SPC), KC_SPC, LT(LAYER_3, KC_PGUP), KC_PGDN, JMP_LEFT, JMP_RIGHT),
+ 
   [1] = LAYOUT(KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_TRNS,
-               KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MINS, KC_LBRC, KC_RBRC, KC_TRNS, KC_BSLS,
-               KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_EQL, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-               KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
+               KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MINS, KC_LBRC, KC_RBRC, KC_TRNS, KC_TRNS,
+               KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+               KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS, KC_TRNS, KC_EQL, KC_BSLS, KC_TRNS, KC_TRNS),
 
-  [2] = LAYOUT(KC_ESC, KC_SLCK, KC_PAUS, KC_F16, KC_F17, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_F18, OSX_LOCK,
-               KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, TD(MCRO_KEY_TAP),
-               KC_TRNS, KC_MPRV, KC_MNXT, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS,
-               KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LANG1, KC_LANG2, KC_HOME, KC_PGDN, KC_PGUP, KC_END),
+  [2] = LAYOUT(KC_ESC, KC_LPRN, KC_RPRN, KC_PLUS, KC_MINS, KC_NO, KC_NO, KC_NO, KC_7, KC_8, KC_9, KC_TRNS,
+               KC_TRNS, KC_LBRC, KC_RBRC, KC_ASTR, KC_SLSH, KC_NO, KC_NO, KC_DOT, KC_4, KC_5, KC_6, KC_TRNS,
+               KC_TRNS, KC_LT, KC_GT, KC_CIRC, KC_EQL, KC_NO, KC_NO, KC_1, KC_2, KC_3, KC_UP, KC_TRNS,
+               KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS, KC_TRNS, KC_0, KC_LEFT, KC_DOWN, KC_RIGHT),
 
-  [3] = LAYOUT(RESET, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_NO,
-              BL_STEP, BL_DEC, BL_INC, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-              KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-              KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO)
+  [3] = LAYOUT(KC_NO, KC_SLCK, KC_PAUS, KC_F16, KC_F17, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_F18, OSX_LOCK,
+               KC_MUTE, KC_VOLD, KC_VOLU, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, TD(MCRO_KEY_TAP),
+               KC_MPLY, KC_MPRV, KC_MNXT, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+               RESET, KC_NO, KC_NO, KC_NO, TD(LANG_KEY_TAP), KC_NO, KC_TRNS, KC_NO, KC_HOME, KC_END) 
+
 };
 
 
@@ -154,9 +157,9 @@ void lyr1_key_finished(qk_tap_dance_state_t *state, void *user_data)
     lyr1_tap_state.state = cur_dance(state);
     switch (lyr1_tap_state.state)
     {
-        case DOUBLE_TAP: 
-            tap_code(KC_CAPS);
-            break;
+		case DOUBLE_TAP:
+			tap_code(KC_CAPS);
+			break;
     }
 }
 
@@ -167,50 +170,6 @@ void lyr1_key_reset(qk_tap_dance_state_t *state, void *user_data)
 }
 /* END LYR1_KEY_TAP */
 
-
-
-/* BEGIN LYR3_KEY_TAP */
-static tap lyr3_tap_state =
-{
-    .is_press_action = true,
-    .state = 0
-};
-
-
-void lyr3_key_finished(qk_tap_dance_state_t *state, void *user_data)
-{
-    lyr3_tap_state.state = cur_dance(state);
-    switch (lyr3_tap_state.state)
-    {
-        case SINGLE_HOLD: 
-            register_code(KC_LEFT);
-            break;
-    
-        case DOUBLE_HOLD: 
-            if (layer_state_is(LAYER_3))
-                layer_off(LAYER_3);
-            else
-                layer_on(LAYER_3);
-            break;
-    }
-}
-
-void lyr3_key_reset(qk_tap_dance_state_t *state, void *user_data)
-{
-    switch (lyr3_tap_state.state)
-    {
-        case SINGLE_HOLD:
-            unregister_code(KC_LEFT);
-            break;
-    }
-    lyr3_tap_state.state = 0;
-}
-
-void lyr3_key_press(qk_tap_dance_state_t *state, void *user_data)
-{
-    tap_code(KC_LEFT);
-}
-/* END LYR3_KEY_TAP */
 
 
 /* BEGIN BPSC_KEY_TAP */
@@ -275,13 +234,32 @@ void mcro_key_reset (qk_tap_dance_state_t *state, void *user_data)
 }
 /* END MCRO KEY TAP */
 
+/* BEGIN LANG KEY TAP */
+
+static bool japanese_on = false; 
+
+void lang_key_toggle(qk_tap_dance_state_t *state, void *user_data)
+{
+    if (japanese_on)
+    {
+        tap_code(KC_LANG2);
+        japanese_on = false;
+    }
+    else
+    {
+        tap_code(KC_LANG1);
+        japanese_on = true;
+    }
+}
+/* END LANG KEY TAP */
+
 
 void process_indicator_update(uint32_t state, uint8_t usb_led) {
   for (int i = 0; i < 3; i++) {
     setrgb(0, 0, 0, (LED_TYPE *)&led[i]);
   }
   if (state & (1<<1)) {
-  setrgb(148, 0, 211, (LED_TYPE *)&led[0]);
+  setrgb(0, 0, 255, (LED_TYPE *)&led[0]);
 }
 
     if (state & (1<<3)) {
@@ -289,7 +267,7 @@ void process_indicator_update(uint32_t state, uint8_t usb_led) {
 }
 
   if (state & (1<<2)) {
-  setrgb(255, 20, 147, (LED_TYPE *)&led[1]);
+  setrgb(0, 255, 255, (LED_TYPE *)&led[1]);
 }
 
     if (state & (1<<3)) {
@@ -297,11 +275,7 @@ void process_indicator_update(uint32_t state, uint8_t usb_led) {
 }
 
   if (usb_led & (1<<USB_LED_CAPS_LOCK)) {
-  setrgb(128, 0, 0, (LED_TYPE *)&led[2]);
-}
-
-    if (state & (1<<3)) {
-  setrgb(255, 182, 193, (LED_TYPE *)&led[2]);
+  setrgb(255, 0, 0, (LED_TYPE *)&led[2]);
 }
 
 
@@ -316,7 +290,6 @@ void led_set_user(uint8_t usb_led) {
   process_indicator_update(layer_state, host_keyboard_leds());
 };
 
-
 uint32_t layer_state_set_user(uint32_t state) {
   process_indicator_update(state, host_keyboard_leds());
   return state;
@@ -327,7 +300,7 @@ uint32_t layer_state_set_user(uint32_t state) {
 qk_tap_dance_action_t tap_dance_actions[] = 
 {
     [LYR1_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr1_key_press, lyr1_key_finished, lyr1_key_reset),
-    [LYR3_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lyr3_key_press, lyr3_key_finished, lyr3_key_reset),
     [BSPC_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(bspc_key_press, NULL, bspc_key_reset, 50),
     [MCRO_KEY_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mcro_key_finished, mcro_key_reset),
+    [LANG_KEY_TAP] = ACTION_TAP_DANCE_FN(lang_key_toggle)
 };
