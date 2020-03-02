@@ -9,4 +9,11 @@
   { K30, K31, K32, K33, K34, K35, K36, K37, K38, K39, K3A, K3B }, \
   { K40, K41, K42, K43, K44, KC_NO, KC_NO, K47, K48, K49, K4A, K4B } \
 }
+
+enum {
+    V4N_LED_1 = 0,
+    V4N_LED_2 = 1,
+    V4N_LED_3 = 2
+};
+
 #endif
