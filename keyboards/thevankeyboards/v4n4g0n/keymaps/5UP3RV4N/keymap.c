@@ -29,7 +29,9 @@ enum {
     UPPER_FN_TAP = 0,
     LOWER_FN_TAP = 1,
     DY_MCRO1_TAP = 2,
-    DY_MCRO2_TAP = 3
+    DY_MCRO2_TAP = 3,
+    RIGHT_UP_TAP = 4,
+    LEFT_DOWN_TAP = 5
 };
 
 // Tap Dance Function Prototypes
@@ -73,8 +75,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE_LAYER] = LAYOUT(KC_F16, KC_F17, KC_VOLD, KC_VOLU, KC_SLCK, KC_PAUS, // 6
           KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, BSPC_SHFT_DEL, // 12
           TD(UPPER_FN_TAP), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT, // 12
-          KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, MT(MOD_RSFT, KC_UP), //12
-          KC_LCTL, KC_LALT, KC_LGUI, KC_NO, KC_NO, LT(NAV_LAYER, KC_SPC), KC_NO, TD(LOWER_FN_TAP), JMP_LEFT, JMP_RIGHT), //10
+          KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, //12
+          KC_LCTL, KC_LALT, KC_LGUI, KC_NO, KC_NO, LT(NAV_LAYER, KC_SPC), KC_NO, TD(LOWER_FN_TAP), TD(LEFT_DOWN_TAP), TD(RIGHT_UP_TAP)), //10
 
   [BASE_AUX_LAYER] = LAYOUT(KC_MPRV, KC_MNXT, KC_MPLY, KC_MUTE, OSX_PSCR, OSX_LOCK, 
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
@@ -191,19 +193,13 @@ static tap lower_fn_tap_state = {
 };
 
 void lower_fn_key_press(qk_tap_dance_state_t *state, void *user_data) {
-    layer_on(NUMPAD_FN_LAYER);
 }
 
 void lower_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
     lower_fn_tap_state.state = cur_dance(state);
     switch (lower_fn_tap_state.state) {
-
-        case SINGLE_TAP:
-            if (layer_state_is(NUMPAD_FN_LAYER)) {
-                layer_off(NUMPAD_FN_LAYER);
-            } else {
-                tap_code(KC_DOWN);
-            }
+        case SINGLE_HOLD:
+            layer_on(NUMPAD_FN_LAYER);
             break;
 
         case DOUBLE_TAP:
@@ -214,11 +210,7 @@ void lower_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
             }
             break;
 
-        case DOUBLE_HOLD:
-            //tap_code(OSX_LOCK);
-            break;
-
-		case TRIPLE_TAP:
+		case DOUBLE_HOLD:
             if (layer_state_is(GAME_LAYER)) {
                 layer_off(GAME_LAYER);
                 CURRENT_AUX_LAYER = BASE_AUX_LAYER;
@@ -231,7 +223,9 @@ void lower_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 void lower_fn_key_reset (qk_tap_dance_state_t *state, void *user_data) {
-    layer_off(NUMPAD_FN_LAYER);
+    if (lower_fn_tap_state.state == SINGLE_HOLD)
+        layer_off(NUMPAD_FN_LAYER);
+
     lower_fn_tap_state.state = 0;
 }
 
@@ -289,7 +283,9 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [UPPER_FN_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(upper_fn_key_press, upper_fn_key_finished, upper_fn_key_reset),
     [LOWER_FN_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lower_fn_key_press, lower_fn_key_finished, lower_fn_key_reset),
     [DY_MCRO1_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mcro_key_finished, mcro_key_reset),
-    [DY_MCRO2_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mcro_key_finished, mcro_key_reset)
+    [DY_MCRO2_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mcro_key_finished, mcro_key_reset),
+    [RIGHT_UP_TAP] = ACTION_TAP_DANCE_DOUBLE(KC_RIGHT, KC_UP),
+    [LEFT_DOWN_TAP] = ACTION_TAP_DANCE_DOUBLE(KC_LEFT, KC_DOWN)
 };
 
 
