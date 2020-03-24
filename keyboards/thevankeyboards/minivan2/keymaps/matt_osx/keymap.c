@@ -17,6 +17,8 @@ enum {
 enum {
     BSPC_SHFT_DEL = SAFE_RANGE,
     PGDN_SHFT_PGUP,
+    LEFT_SHIFT_DOWN,
+    RIGHT_SHIFT_UP
 };
 
 // Tapdance Names
@@ -24,8 +26,6 @@ enum {
     UPPER_FN_TAP = 0,
     LOWER_FN_TAP = 1,
     DY_MCRO1_TAP = 2,
-    RIGHT_UP_TAP = 3,
-    LEFT_DOWN_TAP = 4
 };
 
 // Tap Dance Function Prototypes
@@ -66,40 +66,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE_LAYER] = LAYOUT(KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, BSPC_SHFT_DEL,
             TD(UPPER_FN_TAP), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT,
             KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
-            KC_LCTL, KC_LALT, KC_LGUI, KC_NO, LT(NAV_LAYER, KC_SPC), KC_SPC, TD(LOWER_FN_TAP), TD(LEFT_DOWN_TAP), KC_NO, TD(RIGHT_UP_TAP)),
+            KC_NO, KC_LCTL, KC_LALT, KC_LGUI, LT(NAV_LAYER, KC_SPC), KC_SPC, TD(LOWER_FN_TAP), LEFT_SHIFT_DOWN, RIGHT_SHIFT_UP, KC_NO),
 
     [NUMROW_SYMBOL_LAYER] = LAYOUT(KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_TRNS,
             KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MINS, KC_LBRC, KC_RBRC, KC_TRNS, KC_TRNS,
             KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-            KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS, KC_TRNS, KC_EQL, KC_BSLS, KC_NO, KC_TRNS),
+            KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_EQL, KC_BSLS, KC_TRNS, KC_NO),
 
-    [NAV_LAYER] = LAYOUT(KC_TRNS, KC_F16, KC_F17, OSX_PSCR, OSX_LOCK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+    [NAV_LAYER] = LAYOUT(KC_TRNS, KC_F17, KC_F16, OSX_PSCR, OSX_LOCK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
             KC_TRNS, KC_SLCK, KC_PAUS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
             KC_TRNS, KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_HOME, KC_UP, KC_END, PGDN_SHFT_PGUP,
-            KC_MPRV, KC_MNXT, KC_MPLY, KC_NO, KC_TRNS, KC_TRNS, KC_LEFT, KC_DOWN, KC_NO, KC_RIGHT),
+            KC_NO, KC_MPRV, KC_MNXT, KC_MPLY, KC_TRNS, KC_TRNS, KC_LEFT, KC_DOWN, KC_RIGHT, KC_NO),
     
     [NUMPAD_FN_LAYER] = LAYOUT(RESET, KC_PPLS, KC_PMNS, KC_LPRN, KC_RPRN, KC_PERC, KC_NO, KC_NO, KC_P7, KC_P8, KC_P9, KC_TRNS,
             KC_PEQL, KC_PAST, KC_PSLS, KC_LBRC, KC_RBRC, KC_HASH, KC_NO, KC_NO, KC_P4, KC_P5, KC_P6, KC_TRNS, 
             KC_CIRC, KC_LT, KC_GT, KC_LCBR, KC_RCBR, KC_DLR, KC_NO, KC_P0, KC_P1, KC_P2, KC_P3, KC_PDOT, 
-            KC_EXLM, KC_AMPR, KC_PIPE, KC_NO, TD(DY_MCRO1_TAP), KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_COMM)
+            KC_NO, KC_EXLM, KC_AMPR, KC_PIPE, TD(DY_MCRO1_TAP), KC_TRNS, KC_TRNS, KC_TRNS, KC_COMM, KC_NO)
 };
 
 
 // Macro State
 static uint8_t BSPC_SHFT_DEL_KEYCODE = KC_BSPC;
 static uint8_t PGDN_SHFT_PGUP_KEYCODE = KC_PGDN;
-
+static uint8_t LEFT_SHIFT_DOWN_KEYCODE = KC_LEFT;
+static uint8_t RIGHT_SHIFT_UP_KEYCODE = KC_RIGHT;
+static bool SHIFTED = false;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-
     switch (keycode) {
         case BSPC_SHFT_DEL:
             if (record->event.pressed) {
-                // If Left-Shift or Right-Shift is held
-                if (keyboard_report->mods & MOD_BIT(KC_RSFT) || keyboard_report->mods & MOD_BIT(KC_LSFT)) {
-                    // Set key to delete
+                if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
                     BSPC_SHFT_DEL_KEYCODE = KC_DEL;
                 } else {
-                    // Otherwise set key to backspace
                     BSPC_SHFT_DEL_KEYCODE = KC_BSPC;
                 }
                 register_code(BSPC_SHFT_DEL_KEYCODE);
@@ -110,17 +108,52 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         case PGDN_SHFT_PGUP:
             if (record->event.pressed) {
-                // If Left-Shift or Right-Shift is held
-                if (keyboard_report->mods & MOD_BIT(KC_RSFT) || keyboard_report->mods & MOD_BIT(KC_LSFT)) {
-                    // Set key to page up
+                if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
                     PGDN_SHFT_PGUP_KEYCODE = KC_PGUP;
+                    SHIFTED = true;
                 } else {
-                    // Otherwise set key to page down
                     PGDN_SHFT_PGUP_KEYCODE = KC_PGDN;
+                    SHIFTED = false;
                 }
+                if (SHIFTED) unregister_code(KC_LSFT);
                 register_code(PGDN_SHFT_PGUP_KEYCODE);
             } else {
                 unregister_code(PGDN_SHFT_PGUP_KEYCODE);
+                if (SHIFTED) register_code(KC_LSFT);
+            }
+            break;
+
+        case LEFT_SHIFT_DOWN:
+            if (record->event.pressed) {
+                if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
+                    LEFT_SHIFT_DOWN_KEYCODE = KC_DOWN;
+                    SHIFTED = true;
+                } else {
+                    LEFT_SHIFT_DOWN_KEYCODE = KC_LEFT;
+                    SHIFTED = false;
+                }
+                if (SHIFTED) unregister_code(KC_LSFT);
+                register_code(LEFT_SHIFT_DOWN_KEYCODE);
+            } else {
+                unregister_code(LEFT_SHIFT_DOWN_KEYCODE);
+                if (SHIFTED) register_code(KC_LSFT);
+            }
+            break;
+
+        case RIGHT_SHIFT_UP:
+            if (record->event.pressed) {
+                if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
+                    RIGHT_SHIFT_UP_KEYCODE = KC_UP;
+                    SHIFTED = true;
+                } else {
+                    RIGHT_SHIFT_UP_KEYCODE = KC_RIGHT;
+                    SHIFTED = false;
+                }
+                if (SHIFTED) unregister_code(KC_LSFT);
+                register_code(RIGHT_SHIFT_UP_KEYCODE);
+            } else {
+                unregister_code(RIGHT_SHIFT_UP_KEYCODE);
+                if (SHIFTED) register_code(KC_LSFT);
             }
             break;
     }
@@ -142,7 +175,7 @@ void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
 		case DOUBLE_TAP:
 			tap_code(KC_ESC);
 			break;
-        case TRIPLE_TAP:
+        case TRIPLE_HOLD:
             tap_code(KC_CAPS);
             break;
     }
@@ -169,7 +202,7 @@ void lower_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
             layer_on(NUMPAD_FN_LAYER);
             break;
 
-        case DOUBLE_TAP:
+        case DOUBLE_HOLD:
             if (layer_state_is(NUMPAD_FN_LAYER)) {
                 layer_off(NUMPAD_FN_LAYER);
             } else {
@@ -235,8 +268,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [UPPER_FN_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(upper_fn_key_press, upper_fn_key_finished, upper_fn_key_reset),
     [LOWER_FN_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(lower_fn_key_press, lower_fn_key_finished, lower_fn_key_reset),
     [DY_MCRO1_TAP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mcro_key_finished, mcro_key_reset),
-    [RIGHT_UP_TAP] = ACTION_TAP_DANCE_DOUBLE(KC_RIGHT, KC_UP),
-    [LEFT_DOWN_TAP] = ACTION_TAP_DANCE_DOUBLE(KC_LEFT, KC_DOWN)
 };
 
 
