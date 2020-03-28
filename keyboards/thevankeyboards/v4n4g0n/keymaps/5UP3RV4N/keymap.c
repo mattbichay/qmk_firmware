@@ -209,6 +209,9 @@ void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
 		case DOUBLE_TAP:
 			tap_code(KC_ESC);
 			break;
+        case DOUBLE_HOLD:
+            register_code(KC_ESC);
+            break;
         case TRIPLE_HOLD:
             tap_code(KC_CAPS);
             break;
@@ -218,6 +221,8 @@ void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
 void upper_fn_key_reset (qk_tap_dance_state_t *state, void *user_data) {
     layer_off(NUMROW_SYMBOL_LAYER);
     layer_off(CURRENT_AUX_LAYER);
+    if (upper_fn_tap_state.state == DOUBLE_HOLD)
+        unregister_code(KC_ESC);
     upper_fn_tap_state.state = 0;
 }
 
@@ -269,9 +274,9 @@ static tap mcro_tap_state =
     .state = 0
 };
 
-static bool recording = false;
-static int DYN_MACRO_PLAY = DYN_MACRO_PLAY1;
-static int DYN_REC_START = DYN_REC_START1;
+static bool RECORDING = false;
+static uint16_t DYN_MACRO_PLAY = DYN_MACRO_PLAY1;
+static uint16_t DYN_REC_START = DYN_REC_START1;
 
 void mcro_key1_finished(qk_tap_dance_state_t *state, void *user_data) {
     DYN_MACRO_PLAY = DYN_MACRO_PLAY1;
@@ -290,20 +295,18 @@ void mcro_key_finished(qk_tap_dance_state_t *state, void *user_data) {
     keyrecord_t kr;
     kr.event.pressed = false;
 
-    if (recording) {
+    if (RECORDING) {
         kr.event.pressed = true;
         process_dynamic_macro(DYN_REC_STOP, &kr);
-        recording = false;
+        RECORDING = false;
     }
 
     else if (mcro_tap_state.state == SINGLE_TAP) {
-        kr.event.pressed = false;
         process_dynamic_macro(DYN_MACRO_PLAY, &kr);
     }
 
     else if (mcro_tap_state.state == DOUBLE_TAP) {
-        kr.event.pressed = false;
-        recording = true;
+        RECORDING = true;
         process_dynamic_macro(DYN_REC_START, &kr);
     }
 }
@@ -316,8 +319,8 @@ void mcro_key_reset(qk_tap_dance_state_t *state, void *user_data) {
 qk_tap_dance_action_t tap_dance_actions[] = {
     [UPPER_FN_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(upper_fn_key_press, upper_fn_key_finished, upper_fn_key_reset, NORMAL_TAP_TIME),
     [LOWER_FN_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(lower_fn_key_press, lower_fn_key_finished, lower_fn_key_reset, NORMAL_TAP_TIME),
-    [DY_MCRO1_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, mcro_key_finished, mcro_key_reset, NORMAL_TAP_TIME),
-    [DY_MCRO2_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, mcro_key_finished, mcro_key_reset, NORMAL_TAP_TIME),
+    [DY_MCRO1_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, mcro_key1_finished, mcro_key_reset, NORMAL_TAP_TIME),
+    [DY_MCRO2_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, mcro_key2_finished, mcro_key_reset, NORMAL_TAP_TIME),
 };
 
 

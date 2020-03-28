@@ -29,4 +29,6 @@
 #define PERMISSIVE_HOLD
 #define IS_COMMAND() ( keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)) )
 
+#define DYNAMIC_MACRO_NO_NESTING
+
 #endif
