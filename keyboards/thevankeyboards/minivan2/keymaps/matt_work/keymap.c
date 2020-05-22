@@ -16,9 +16,6 @@ enum {
 // Macro Names
 enum {
     BSPC_SHFT_DEL = SAFE_RANGE,
-    PGDN_SHFT_PGUP,
-    LEFT_SHIFT_DOWN,
-    RIGHT_SHIFT_UP
 };
 
 // Tapdance Names
@@ -66,30 +63,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE_LAYER] = LAYOUT(KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, BSPC_SHFT_DEL,
             TD(UPPER_FN_TAP), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT,
             KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
-            KC_LCTL, KC_LALT, KC_LGUI, KC_NO, LT(NAV_LAYER, KC_SPC), KC_SPC, TD(LOWER_FN_TAP), PGDN_SHFT_PGUP, LEFT_SHIFT_DOWN, RIGHT_SHIFT_UP),
+            KC_LCTL, KC_LALT, KC_LGUI, KC_NO, LT(NAV_LAYER, KC_SPC), KC_SPC, TD(LOWER_FN_TAP), KC_PGDN, KC_LEFT, KC_RIGHT),
 
     [NUMROW_SYMBOL_LAYER] = LAYOUT(KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_TRNS,
-            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MINS, KC_LBRC, KC_RBRC, KC_TRNS, KC_TRNS,
-            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-            KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS, KC_TRNS, KC_EQL, KC_BSLS, KC_TRNS, KC_TRNS),
+            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BSLS, KC_MINS, KC_LBRC, KC_RBRC, KC_TRNS, KC_TRNS,
+            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_EQL, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+            KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_PGUP, KC_DOWN, KC_UP),
 
     [NAV_LAYER] = LAYOUT(KC_TRNS, KC_F17, KC_F16, OSX_PSCR, OSX_LOCK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
             KC_TRNS, KC_SLCK, KC_PAUS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-            KC_TRNS, KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_HOME, KC_END, KC_UP, KC_TRNS,
+            KC_TRNS, KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_HOME, KC_UP, KC_END,
             KC_MPRV, KC_MNXT, KC_MPLY, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_LEFT, KC_DOWN, KC_RIGHT),
     
     [NUMPAD_FN_LAYER] = LAYOUT(RESET, KC_PPLS, KC_PMNS, KC_LPRN, KC_RPRN, KC_PERC, KC_NO, KC_NO, KC_P7, KC_P8, KC_P9, KC_TRNS,
             KC_PEQL, KC_PAST, KC_PSLS, KC_LBRC, KC_RBRC, KC_HASH, KC_NO, KC_NO, KC_P4, KC_P5, KC_P6, KC_TRNS, 
             KC_CIRC, KC_LT, KC_GT, KC_LCBR, KC_RCBR, KC_DLR, KC_NO, KC_P0, KC_P1, KC_P2, KC_P3, KC_PDOT, 
-            KC_EXLM, KC_AMPR, KC_PIPE, KC_NO, TD(DY_MCRO1_TAP), KC_TRNS, KC_TRNS, KC_TRNS, KC_COMM, KC_TRNS)
+            KC_EXLM, KC_AMPR, KC_PIPE, KC_NO, TD(DY_MCRO1_TAP), KC_TRNS, KC_TRNS, KC_EQL, KC_COMM, KC_TRNS)
 };
 
 
 // Macro State
 static uint8_t BSPC_SHFT_DEL_KEYCODE = KC_BSPC;
-static uint8_t PGDN_SHFT_PGUP_KEYCODE = KC_PGDN;
-static uint8_t LEFT_SHIFT_DOWN_KEYCODE = KC_LEFT;
-static uint8_t RIGHT_SHIFT_UP_KEYCODE = KC_RIGHT;
 static bool SHIFTED = false;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -97,65 +91,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
                     BSPC_SHFT_DEL_KEYCODE = KC_DEL;
+                    SHIFTED = true;
                 } else {
                     BSPC_SHFT_DEL_KEYCODE = KC_BSPC;
+                    SHIFTED = false;
                 }
+                if (SHIFTED) unregister_code(KC_LSFT);
                 register_code(BSPC_SHFT_DEL_KEYCODE);
             } else {
                 unregister_code(BSPC_SHFT_DEL_KEYCODE);
-            }
-            break;
-
-        case PGDN_SHFT_PGUP:
-            if (record->event.pressed) {
-                if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
-                    PGDN_SHFT_PGUP_KEYCODE = KC_PGUP;
-                    SHIFTED = true;
-                } else {
-                    PGDN_SHFT_PGUP_KEYCODE = KC_PGDN;
-                    SHIFTED = false;
-                }
-                if (SHIFTED) unregister_code(KC_LSFT);
-                register_code(PGDN_SHFT_PGUP_KEYCODE);
-            } else {
-                unregister_code(PGDN_SHFT_PGUP_KEYCODE);
                 if (SHIFTED) register_code(KC_LSFT);
             }
-            break;
-
-        case LEFT_SHIFT_DOWN:
-            if (record->event.pressed) {
-                if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
-                    LEFT_SHIFT_DOWN_KEYCODE = KC_DOWN;
-                    SHIFTED = true;
-                } else {
-                    LEFT_SHIFT_DOWN_KEYCODE = KC_LEFT;
-                    SHIFTED = false;
-                }
-                if (SHIFTED) unregister_code(KC_LSFT);
-                register_code(LEFT_SHIFT_DOWN_KEYCODE);
-            } else {
-                unregister_code(LEFT_SHIFT_DOWN_KEYCODE);
-                if (SHIFTED) register_code(KC_LSFT);
-            }
-            break;
-
-        case RIGHT_SHIFT_UP:
-            if (record->event.pressed) {
-                if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
-                    RIGHT_SHIFT_UP_KEYCODE = KC_UP;
-                    SHIFTED = true;
-                } else {
-                    RIGHT_SHIFT_UP_KEYCODE = KC_RIGHT;
-                    SHIFTED = false;
-                }
-                if (SHIFTED) unregister_code(KC_LSFT);
-                register_code(RIGHT_SHIFT_UP_KEYCODE);
-            } else {
-                unregister_code(RIGHT_SHIFT_UP_KEYCODE);
-                if (SHIFTED) register_code(KC_LSFT);
-            }
-            break;
     }
     return true;
 };
