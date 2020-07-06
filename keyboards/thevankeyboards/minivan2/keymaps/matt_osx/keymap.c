@@ -112,6 +112,7 @@ static tap upper_fn_tap_state = {
     .state = 0
 };
 
+
 void upper_fn_key_press(qk_tap_dance_state_t *state, void *user_data) {
     layer_on(NUMROW_SYMBOL_LAYER);
 }
@@ -119,6 +120,9 @@ void upper_fn_key_press(qk_tap_dance_state_t *state, void *user_data) {
 void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
     upper_fn_tap_state.state = cur_dance(state);
     switch (upper_fn_tap_state.state) {
+		case SINGLE_TAP:
+			set_oneshot_layer(NUMROW_SYMBOL_LAYER, ONESHOT_START);
+			break;
 		case DOUBLE_TAP:
 			tap_code(KC_ESC);
 			break;
@@ -130,10 +134,17 @@ void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
             break;
     }
 }
+
 void upper_fn_key_reset (qk_tap_dance_state_t *state, void *user_data) {
-    if (upper_fn_tap_state.state == DOUBLE_HOLD)
-        unregister_code(KC_ESC);
-    layer_off(NUMROW_SYMBOL_LAYER);
+	switch (upper_fn_tap_state.state) {
+		case SINGLE_TAP:
+			clear_oneshot_layer_state(ONESHOT_PRESSED);
+			break;
+		case DOUBLE_HOLD:
+			unregister_code(KC_ESC);
+		default:
+			layer_off(NUMROW_SYMBOL_LAYER);
+	}
     upper_fn_tap_state.state = 0;
 }
 
@@ -235,10 +246,13 @@ void process_indicator_update(uint32_t state, uint8_t usb_led) {
         setrgb(0, 0, 0, (LED_TYPE *)&led[i]);
     }
     if (state & (1<<NUMROW_SYMBOL_LAYER)) {
-        setrgb(0, 0, 255, (LED_TYPE *)&led[0]);
+		int r = rand() % 255 + 1;
+		int g = rand() % 255 + 1;
+		int b = rand() % 255 + 1;
+		setrgb(r, g, b, (LED_TYPE *)&led[0]);
     }
     if (state & (1<<NAV_LAYER)) {
-        setrgb(128, 0, 128, (LED_TYPE *)&led[0]);
+        setrgb(128, 0, 128, (LED_TYPE *)&led[1]);
     }
     if (state & (1<<NUMPAD_FN_LAYER)) {
         setrgb(0, 255, 255, (LED_TYPE *)&led[1]);

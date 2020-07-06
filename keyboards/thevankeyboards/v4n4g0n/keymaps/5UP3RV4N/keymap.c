@@ -153,6 +153,9 @@ void upper_fn_key_press(qk_tap_dance_state_t *state, void *user_data) {
 void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
     upper_fn_tap_state.state = cur_dance(state);
     switch (upper_fn_tap_state.state) {
+		case SINGLE_TAP:
+			set_oneshot_layer(NUMROW_SYMBOL_LAYER, ONESHOT_START);
+			break;
 		case DOUBLE_TAP:
 			tap_code(KC_ESC);
 			break;
@@ -166,11 +169,22 @@ void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 void upper_fn_key_reset (qk_tap_dance_state_t *state, void *user_data) {
-    layer_off(NUMROW_SYMBOL_LAYER);
-    layer_off(CURRENT_AUX_LAYER);
-    if (upper_fn_tap_state.state == DOUBLE_HOLD)
-        unregister_code(KC_ESC);
+	switch (upper_fn_tap_state.state) {
+		case SINGLE_TAP:
+			clear_oneshot_layer_state(ONESHOT_PRESSED);
+			break;
+		case DOUBLE_HOLD:
+			unregister_code(KC_ESC);
+		default:
+    		layer_off(NUMROW_SYMBOL_LAYER);
+    		layer_off(CURRENT_AUX_LAYER);
+	}
     upper_fn_tap_state.state = 0;
+}
+
+void oneshot_layer_changed_user(uint8_t layer) {
+	if (!layer)
+		layer_off(CURRENT_AUX_LAYER);
 }
 
 static tap lower_fn_tap_state = {
