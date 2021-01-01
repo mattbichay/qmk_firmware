@@ -6,7 +6,7 @@
 #define JMP_LEFT LALT(KC_LEFT)
 #define JMP_RIGHT LALT(KC_RIGHT)
 
-#define NORMAL_TAP_TIME 150
+#define NORMAL_TAP_TIME 180
 
 // Layer Names
 enum {
@@ -15,8 +15,7 @@ enum {
     GAME_LAYER = 2,
     GAME_AUX_LAYER = 3,
     NUMROW_SYMBOL_LAYER = 4,
-    NAV_LAYER = 5,
-    NUMPAD_FN_LAYER = 6
+    FN_NAV_LAYER = 5,
 };
 static uint8_t CURRENT_AUX_LAYER = BASE_AUX_LAYER;
 
@@ -31,6 +30,11 @@ enum {
     LOWER_FN_TAP = 1,
     DY_MCRO1_TAP = 2,
     DY_MCRO2_TAP = 3,
+};
+
+// Macro NAmes
+enum {
+	TAB_Q_ESC
 };
 
 // Tap Dance Function Prototypes
@@ -67,6 +71,8 @@ enum {
 int cur_dance(qk_tap_dance_state_t *state);
 void set_v4n_led_state(uint8_t led, bool led_state);
 
+// Combos
+const uint16_t PROGMEM tabq_esc_combo[] = {KC_TAB, KC_Q, COMBO_END};
 
 // Keymaps
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -75,7 +81,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
           KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, BSPC_SHFT_DEL, // 12
           TD(UPPER_FN_TAP), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT, // 12
           KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, //12
-          KC_LCTL, KC_LALT, KC_LGUI, KC_NO, KC_NO, LT(NAV_LAYER, KC_SPC), KC_NO, TD(LOWER_FN_TAP), KC_LEFT, KC_RIGHT), //10
+          KC_LCTL, KC_LALT, KC_LGUI, KC_NO, KC_NO, KC_SPC, KC_NO, TD(LOWER_FN_TAP), KC_LEFT, KC_RIGHT), //10
 
   [BASE_AUX_LAYER] = LAYOUT(KC_MPRV, KC_MNXT, KC_MPLY, KC_MUTE, OSX_PSCR, OSX_LOCK, 
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
@@ -87,7 +93,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-          KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_SPC, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS),
+          KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS),
 
   [GAME_AUX_LAYER] = LAYOUT(KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6,
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
@@ -101,18 +107,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_EQL, KC_QUOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
           KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_TRNS, KC_DOWN, KC_UP),
 
-  [NAV_LAYER] = LAYOUT(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+  [FN_NAV_LAYER] = LAYOUT(TD(DY_MCRO1_TAP), TD(DY_MCRO2_TAP), KC_TRNS, KC_TRNS, KC_TRNS, RESET,
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_HOME, KC_UP, KC_END,
-          KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT),
-
-  [NUMPAD_FN_LAYER] = LAYOUT(TD(DY_MCRO1_TAP), TD(DY_MCRO2_TAP), KC_NO, KC_NO, KC_NO, RESET,
-          KC_TRNS, KC_PPLS, KC_PMNS, KC_LPRN, KC_RPRN, KC_PERC, KC_NO, KC_NO, KC_P7, KC_P8, KC_P9, KC_TRNS,
-          KC_PEQL, KC_PAST, KC_PSLS, KC_LBRC, KC_RBRC, KC_HASH, KC_NO, KC_NO, KC_P4, KC_P5, KC_P6, KC_TRNS, 
-          KC_CIRC, KC_LT, KC_GT, KC_LCBR, KC_RCBR, KC_DLR, KC_NO, KC_P0, KC_P1, KC_P2, KC_P3, KC_PDOT, 
-          KC_EXLM, KC_AMPR, KC_PIPE, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_TRNS, KC_NO, KC_COMM)
+          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+          KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_TRNS, KC_HOME, KC_END),
 };
+
+
+// Custom Combo Processing
+void process_combo_event(uint8_t combo_index, bool pressed) {
+	switch(combo_index) {
+		case TAB_Q_ESC:
+			if (pressed) {
+				SEND_STRING(SS_TAP(X_ESC));
+			}
+			break;
+	}
+}
+
+
 
 // Macro State
 static uint8_t BSPC_SHFT_DEL_KEYCODE = KC_BSPC;
@@ -156,12 +170,6 @@ void upper_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
 		case SINGLE_TAP:
 			set_oneshot_layer(NUMROW_SYMBOL_LAYER, ONESHOT_START);
 			break;
-		case DOUBLE_TAP:
-			tap_code(KC_ESC);
-			break;
-        case DOUBLE_HOLD:
-            register_code(KC_ESC);
-            break;
         case TRIPLE_HOLD:
             tap_code(KC_CAPS);
             break;
@@ -173,8 +181,6 @@ void upper_fn_key_reset (qk_tap_dance_state_t *state, void *user_data) {
 		case SINGLE_TAP:
 			clear_oneshot_layer_state(ONESHOT_PRESSED);
 			break;
-		case DOUBLE_HOLD:
-			unregister_code(KC_ESC);
 		default:
     		layer_off(NUMROW_SYMBOL_LAYER);
     		layer_off(CURRENT_AUX_LAYER);
@@ -207,15 +213,7 @@ void lower_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
             break;
 
         case SINGLE_HOLD:
-            layer_on(NUMPAD_FN_LAYER);
-            break;
-
-        case DOUBLE_HOLD:
-            if (layer_state_is(NUMPAD_FN_LAYER)) {
-                layer_off(NUMPAD_FN_LAYER);
-            } else {
-                layer_on(NUMPAD_FN_LAYER);
-            }
+            layer_on(FN_NAV_LAYER);
             break;
 
 		case TRIPLE_HOLD:
@@ -232,7 +230,7 @@ void lower_fn_key_finished(qk_tap_dance_state_t *state, void *user_data) {
 
 void lower_fn_key_reset (qk_tap_dance_state_t *state, void *user_data) {
     if (lower_fn_tap_state.state == SINGLE_HOLD)
-        layer_off(NUMPAD_FN_LAYER);
+        layer_off(FN_NAV_LAYER);
 
     lower_fn_tap_state.state = 0;
 }
@@ -292,28 +290,47 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [DY_MCRO2_TAP] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, mcro_key2_finished, mcro_key_reset, NORMAL_TAP_TIME),
 };
 
+//Associate Combos with Functionality
+combo_t key_combos[COMBO_COUNT] = {
+	[TAB_Q_ESC]      = COMBO_ACTION(tabq_esc_combo)
+};
 
 
 void process_indicator_update(uint32_t state, uint8_t usb_led) {
-    if ((state & (1<<NUMROW_SYMBOL_LAYER)) ||
-        (state & (1<<NAV_LAYER)) ||
-        (state & (1<<NUMPAD_FN_LAYER))) {
-        set_v4n_led_state(V4N_LED_2, true);
+	
+	bool led_1_state = false;
+	bool led_2_state = false;
+	bool led_3_state = false;
+
+    if (state & (1<<NUMROW_SYMBOL_LAYER)) {
+		led_1_state = true;
     } else {
-        set_v4n_led_state(V4N_LED_2, false);
+		led_1_state = led_1_state ? true : false;
     }
 
+	if (state & (1<<FN_NAV_LAYER)) {
+		led_1_state = true;
+		led_2_state = true;
+	} else {
+		led_1_state = led_1_state ? true : false;
+		led_2_state = led_2_state ? true : false;
+	}
+
     if (state & (1<<GAME_LAYER)) {
-        set_v4n_led_state(V4N_LED_1, true);
+		led_3_state = true;
     } else {
-        set_v4n_led_state(V4N_LED_1, false);
+		led_3_state = led_3_state ? true : false;
     }
     
     if (usb_led & (1<<USB_LED_CAPS_LOCK)) {
-        set_v4n_led_state(V4N_LED_3, true);
+		led_2_state = true;
     } else {
-        set_v4n_led_state(V4N_LED_3, false);
+		led_3_state = led_3_state ? true : false;
     }
+
+	set_v4n_led_state(V4N_LED_1, led_1_state);
+	set_v4n_led_state(V4N_LED_2, led_2_state);
+	set_v4n_led_state(V4N_LED_3, led_3_state);
 };
 
 void keyboard_post_init_user(void) {

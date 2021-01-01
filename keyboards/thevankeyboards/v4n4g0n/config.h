@@ -33,4 +33,5 @@
 
 #define DYNAMIC_MACRO_NO_NESTING
 
+#define COMBO_COUNT 2
 #endif

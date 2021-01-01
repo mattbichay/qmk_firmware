@@ -21,7 +21,7 @@
 #define BACKLIGHT_PIN B7
 
 #define DEBOUNCE 5
-#define TAPPING_TERM 150
+#define TAPPING_TERM 175
 
 #define ONESHOT_TIMEOUT 5000
 
@@ -34,4 +34,7 @@
 #define RGBLIGHT_ANIMATIONS
 #define RGBLIGHT_SLEEP
 #define IS_COMMAND() ( keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)) )
+
+#define COMBO_COUNT 1
+
 #endif
